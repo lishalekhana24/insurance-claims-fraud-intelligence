@@ -1,6 +1,3 @@
-Hey, I have pushed my current work on the **Insurance Claims Fraud Intelligence** project to GitHub.
-
-Repository: https://github.com/lishalekhana24/insurance-claims-fraud-intelligence.git
 
 ### 1. What I have completed
 
