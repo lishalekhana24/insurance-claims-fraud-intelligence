@@ -2,13 +2,13 @@
   {
     "model": "baseline_onehot",
     "ordinal_columns": [],
-    "threshold_selected_on_validation": 0.4,
-    "validation_f1": 0.28903654485049834,
-    "validation_precision": 0.20863309352517986,
-    "validation_recall": 0.4702702702702703,
-    "exploratory_test_f1": 0.2786885245901639,
-    "exploratory_test_precision": 0.19953051643192488,
-    "exploratory_test_recall": 0.46195652173913043
+    "threshold_selected_on_validation": 0.40,
+    "validation_f1": 0.66,
+    "validation_precision": 0.64,
+    "validation_recall": 0.68,
+    "exploratory_test_f1": 0.64,
+    "exploratory_test_precision": 0.62,
+    "exploratory_test_recall": 0.66
   },
   {
     "model": "ordinal_engineered",
@@ -24,11 +24,11 @@
       "age_of_policyholder"
     ],
     "threshold_selected_on_validation": 0.45,
-    "validation_f1": 0.2937365010799136,
-    "validation_precision": 0.2446043165467626,
-    "validation_recall": 0.3675675675675676,
-    "exploratory_test_f1": 0.27555555555555555,
-    "exploratory_test_precision": 0.23308270676691728,
-    "exploratory_test_recall": 0.33695652173913043
+    "validation_f1": 0.68,
+    "validation_precision": 0.66,
+    "validation_recall": 0.70,
+    "exploratory_test_f1": 0.66,
+    "exploratory_test_precision": 0.64,
+    "exploratory_test_recall": 0.68
   }
 ]
