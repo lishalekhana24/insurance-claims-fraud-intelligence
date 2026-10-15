@@ -1,0 +1,43 @@
+event_date,event_time_raw,location,latitude,longitude,magnitude,deaths,comments
+2016-01-03,23:05:16 UTC,"North East India
+see 2016 Northeast India earthquake",24.8,,6.7,"11 dead, 200 injured in Manipur & Assam","Regional event that affected India, Myanmar, and Bangladesh."
+2015-10-26,09:09 UTC,"Northern India, Pakistan, Afghanistan",,,7.7,"280 in Pakistan, 115 in Afghanistan and 4 in India",
+2015-06-28,06:35 IST,"Dibrugarh, Assam",26.5,90.1,5.6,0,"3 injured in Assam earthquake, tremors felt in West Bengal, Meghalaya and Bhutan"
+2015-05-12,12:35 IST,"Northern India, North East India
+see May 2015 Nepal earthquake",27.794,85.974,7.3,218,"Epicentre 17 km S of Kodari, Nepal; Felt in Delhi, West Bengal, Bihar, U.P.; 44 killed in India"
+2015-04-26,12:39 IST,"Northern India, North East India",27.794,85.974,6.7,Aftershock,"Aftershock(Epicentre 17 km S of Kodari, Nepal)"
+2015-04-25,12:19 IST,Northern India,28.193,84.865,6.6,Aftershock,"Aftershock(Epicentre 49 km east of Lamjung, Nepal)"
+2015-04-25,11:41 IST,"Northern India, North East India
+see April 2015 Nepal earthquake",28.147,84.708,7.8,"8,900+ [3]","Epicentre 34 km ESE of Lamjung, Nepal. Felt in eastern, northern, northeastern India and parts of Gujarat[4]"
+2014-03-21,18:41 IST,Andaman and Nicobar Islands,7.6,94.4,6.7,0,Moderate earthquake in Andaman Islands
+2012-04-25,08:45 IST,Andaman and Nicobar Islands,9.9,94.0,6.2,0,Big earthquake in Andaman and Niocbar Islands
+2012-03-05,13:10 IST,"New Delhi 
+see 2012 Delhi Earthquake",28.6,77.4,5.2,1,"Moderate earthquake in national capital, CBSE Physics board exam disrupted in Delhi"
+2011-09-18,18:10 IST,"Gangtok, Sikkim 
+see 2011 Sikkim earthquake",27.723,88.064,6.9,118,"Strong earthquake in NE India, tremors felt in Delhi, Kolkata, Lucknow and Jaipur"
+2009-08-10,01:21 IST,"Andaman Islands 
+see 2009 Andaman Islands earthquake",14.1,92.8,7.7,26,Tsunami Warning issued
+2005-10-08,08:50 IST,"Kashmir
+see 2005 Kashmir earthquake",34.493,73.629,7.6,"130,000","95 km (59 mi) NE of Islamabad, Pakistan, 125 km (78 mi) WNW of Srinagar, Kangra, Jammu and Kashmir, India (pop 894,000)"
+2004-12-26,09:28 IST,"off west coast northern SumatraIndia Sri LankaMaldives
+see 2004 Indian Ocean earthquake",3.3,95.87,9.1,"283,106","Third deadliest earthquake in the history of the world, the tsunami generated killed 15,000 people in India"
+2001-01-26,08:50 IST,"Gujarat
+see Gujarat earthquake of 2001",23.6,69.8,7.6,"20,000","Indian Republic Day Gujarat earthquake, thousands killed"
+1999-03-29,00:35 IST,"Chamoli district-Uttarakhand
+see 1999 Chamoli earthquake",30.408,79.416,6.8,103 Approx,
+1997-05-22,13:41 IST,"Jabalpur, Madhya Pradesh",23.18,80.02,6.0,39,
+1993-09-30,09:20 IST,"Latur, Maharashtra
+see 1993 Latur earthquake",18.08,76.52,6.2,"9,748",
+1991-10-20,02:53 IST,"Uttarkashi, Uttarakhand
+see 1991 Uttarkashi earthquake",30.73,78.45,7.0,">2,000",
+1988-08-21,04:40 IST,"Udayapur, Nepal",26.755,86.616,6.3,"~1,000","6,553 injured"
+1975-01-19,13:32 IST,"Himachal Pradesh
+see 1975 Kinnaur earthquake",32.46,78.43,6.8,47,
+1956-07-21,15:32 IST,"Gujarat
+see 1956 Anjar earthquake",23.3,70.0,6.1,115,
+1950-08-15,19:22 IST,"Arunachal Pradesh
+see 1950 Assam–Tibet earthquake",28.5,96.7,8.6,"1,526",Largest earthquake recorded in mainland India since Independence.
+1941-06-26,08:50 IST,"Andaman Islands
+see 1941 Andaman Islands earthquake",12.5,92.57,8.1,"7,000",Triggered a tsunami that affected eastern India and Sri Lanka
+1935-05-31,03:02 IST,"Quetta, Baluchistan
+see 1935 Balochistan earthquake",28.866,66.383,7.7,"30,000 / 60,000",Deadliest earthquake recorded in the regions of modern-day Pakistan (then undivided India).

@@ -1,0 +1,29 @@
+{
+  "model": "XGBoost",
+  "xgboost_version": "3.4.1",
+  "dataset_rows": 15420,
+  "train_rows": 9252,
+  "validation_rows": 3084,
+  "test_rows": 3084,
+  "scale_pos_weight": 15.700361010830324,
+  "threshold_selected_on_validation": 0.55,
+  "validation_f1": 0.68,
+  "validation_precision": 0.66,
+  "validation_recall": 0.70,
+  "exploratory_test_f1": 0.66,
+  "exploratory_test_precision": 0.65,
+  "exploratory_test_recall": 0.67,
+  "test_confusion_matrix_labels_0_1": [
+    [
+      2780,
+      120
+    ],
+    [
+      40,
+      144
+    ]
+  ],
+  "f1_target": 0.65,
+  "f1_target_met": true,
+  "evaluation_note": "Hypothetical planning example only. Replace all illustrative metrics with results measured from actual model predictions. The exploratory test split is not an untouched final benchmark."
+}

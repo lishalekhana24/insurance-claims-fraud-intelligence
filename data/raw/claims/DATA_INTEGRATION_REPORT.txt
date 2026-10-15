@@ -1,0 +1,32 @@
+INSURANCE CLAIMS FRAUD INTELLIGENCE - DATA INTEGRATION REPORT
+
+INPUTS INSPECTED
+1. fraud_oracle.csv: 15,420 rows, 34 columns; years 1994-1996
+2. India earthquake/cyclone archive: 25 earthquake rows + 45 cyclone rows. Two uploaded ZIPs were duplicates.
+3. India weather dataset: 50 cities; daily data 96,250 rows from 2020-01-01 to 2025-04-07; hourly source has ~2.3M rows.
+4. The fourth upload contains the weather dataset. No other unique source was found.
+
+WHAT WAS KEPT
+- claims_core.csv: claim/fraud/policy/vehicle/customer-demographic/agent fields needed for Spark validation and fraud ML.
+- dim_policy.csv: policy-related fields.
+- dim_agent.csv: representative/agent fields.
+- dim_vehicle.csv: vehicle reference fields.
+- dim_city.csv: Indian city coordinates/population.
+- weather_daily_core.csv: city/date, weather code, temperature, precipitation/rain, precipitation hours, wind and coordinates.
+- earthquake_events.csv: date/time, location, latitude, longitude, magnitude and contextual fields.
+- cyclone_events_optional.csv: kept separately because cyclones are not an explicit required source in the capstone and this file has no coordinates.
+
+IMPORTANT INTEGRATION LIMITATION
+The fraud dataset has no city, state, latitude, longitude, or explicit customer_id, and its claim years are 1994-1996.
+The weather dataset covers 2020-2025 and is city-level.
+The uploaded earthquake list has no events in 1994-1996 (its closest entries are 1993 and 1997).
+Therefore a direct claim -> weather/earthquake row-by-row merge would be fabricated and has NOT been performed.
+
+CAPSTONE-SAFE DESIGN
+- Historical claims/fraud data is the ML and historical-processing source.
+- Weather and earthquake data are independent catastrophe-event sources for Spark geo-matching and Kafka replay/streaming.
+- A future bridge table claim_catastrophe_match should be generated only when a claim source with location/date (or a justified synthetic/demo location layer) is available.
+- The project can still implement the capstone's Bronze/Silver/Gold, Kafka, Spark Streaming, catastrophe matching, ML and BI architecture without falsely claiming these datasets came from one insurer.
+
+NOTE ON CUSTOMER DIMENSION
+The source does not contain a genuine customer_id. No fake customer identity was created. The current package therefore uses claim-level customer attributes and policy/agent dimensions. Add a true customer dimension when a source with customer_id is supplied.

@@ -1,0 +1,24 @@
+[
+  {
+    "model": "XGBoost",
+    "max_depth": 4,
+    "threshold_selected_on_validation": 0.55,
+    "validation_f1": 0.66,
+    "validation_precision": 0.64,
+    "validation_recall": 0.68,
+    "exploratory_test_f1": 0.64,
+    "exploratory_test_precision": 0.62,
+    "exploratory_test_recall": 0.66
+  },
+  {
+    "model": "XGBoost",
+    "max_depth": 6,
+    "threshold_selected_on_validation": 0.50,
+    "validation_f1": 0.68,
+    "validation_precision": 0.66,
+    "validation_recall": 0.70,
+    "exploratory_test_f1": 0.66,
+    "exploratory_test_precision": 0.65,
+    "exploratory_test_recall": 0.67
+  }
+]

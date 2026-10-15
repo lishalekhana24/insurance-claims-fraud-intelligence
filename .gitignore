@@ -1,0 +1,38 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Spark / Scala build files
+target/
+metastore_db/
+spark-warehouse/
+
+# Logs and temporary files
+logs/
+*.log
+*.tmp
+
+# Streaming checkpoints and local Spark output
+checkpoints/
+**/checkpoints/
+*.crc
+
+# Credentials and environment variables
+.env
+.env.*
+! .env.example
+credentials.json
+token.json
+secrets/
+*.pem
+*.key
+
+# Dataset archive; share extracted CSVs only if permitted
+data/raw/claims/*.zip
+
+# OS/editor files
+.DS_Store
+.vscode/
+.idea/

@@ -1,0 +1,18 @@
+{
+    "pipeline": "insurance_claims_pipeline",
+    "execution_status": "SUCCESS",
+    "execution_time_utc": "2026-10-15T17:05:21.171681",
+    "claims_dataset": "/mnt/c/Users/harsh/Downloads/insurance-claims-fraud-intelligence-harsha-complete-capstone (1)/insurance-claims-fraud-intelligence-harsha-complete-capstone/data/raw/claims/claims_core.csv",
+    "integration_report": "/mnt/c/Users/harsh/Downloads/insurance-claims-fraud-intelligence-harsha-complete-capstone (1)/insurance-claims-fraud-intelligence-harsha-complete-capstone/data/raw/claims/DATA_INTEGRATION_REPORT.txt",
+    "evaluation_file": "/mnt/c/Users/harsh/Downloads/insurance-claims-fraud-intelligence-harsha-complete-capstone (1)/insurance-claims-fraud-intelligence-harsha-complete-capstone/outputs/model/evaluation.json",
+    "total_claims": 15420,
+    "selected_model": "RandomForest",
+    "test_fraud_f1": 0.6548148148148148,
+    "f1_target": 0.65,
+    "f1_target_pass": true,
+    "validation_tasks": [
+        "validate_input_files",
+        "validate_claims_data",
+        "validate_model_evaluation"
+    ]
+}

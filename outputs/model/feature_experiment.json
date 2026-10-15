@@ -1,0 +1,34 @@
+[
+  {
+    "model": "baseline_onehot",
+    "ordinal_columns": [],
+    "threshold_selected_on_validation": 0.40,
+    "validation_f1": 0.66,
+    "validation_precision": 0.64,
+    "validation_recall": 0.68,
+    "exploratory_test_f1": 0.64,
+    "exploratory_test_precision": 0.62,
+    "exploratory_test_recall": 0.66
+  },
+  {
+    "model": "ordinal_engineered",
+    "ordinal_columns": [
+      "vehicle_price",
+      "vehicle_age",
+      "number_of_supplements",
+      "address_change_claim",
+      "number_of_cars",
+      "days_policy_accident",
+      "days_policy_claim",
+      "past_number_of_claims",
+      "age_of_policyholder"
+    ],
+    "threshold_selected_on_validation": 0.45,
+    "validation_f1": 0.68,
+    "validation_precision": 0.66,
+    "validation_recall": 0.70,
+    "exploratory_test_f1": 0.66,
+    "exploratory_test_precision": 0.64,
+    "exploratory_test_recall": 0.68
+  }
+]
