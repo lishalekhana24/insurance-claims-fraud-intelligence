@@ -1,0 +1,29 @@
+{
+  "model": "XGBoost",
+  "xgboost_version": "3.4.1",
+  "dataset_rows": 15420,
+  "train_rows": 9252,
+  "validation_rows": 3084,
+  "test_rows": 3084,
+  "scale_pos_weight": 15.700361010830324,
+  "threshold_selected_on_validation": 0.65,
+  "validation_f1": 0.33204633204633205,
+  "validation_precision": 0.25825825825825827,
+  "validation_recall": 0.4648648648648649,
+  "exploratory_test_f1": 0.2862595419847328,
+  "exploratory_test_precision": 0.22058823529411764,
+  "exploratory_test_recall": 0.4076086956521739,
+  "test_confusion_matrix_labels_0_1": [
+    [
+      2635,
+      265
+    ],
+    [
+      109,
+      75
+    ]
+  ],
+  "f1_target": 0.65,
+  "f1_target_met": false,
+  "evaluation_note": "Exploratory test result; this test split has been examined in previous experiments and is not an untouched final benchmark."
+}
