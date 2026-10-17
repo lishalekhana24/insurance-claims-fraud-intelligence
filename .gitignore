@@ -36,3 +36,9 @@ data/raw/claims/*.zip
 .DS_Store
 .vscode/
 .idea/
+
+# Local Airflow environment and runtime data
+.airflow-venv/
+.airflow-home/
+airflow/logs/
+airflow/**/__pycache__/

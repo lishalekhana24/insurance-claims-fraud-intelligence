@@ -1,0 +1,31 @@
+{
+  "dataset_rows": 15420,
+  "train_rows": 9252,
+  "validation_rows": 3084,
+  "test_rows": 3084,
+  "selected_model": "RandomForest",
+  "selected_threshold": 0.35,
+  "best_validation_metrics": {
+    "model": "RandomForest",
+    "threshold": 0.35,
+    "validation_f1": 0.68,
+    "validation_precision": 0.66,
+    "validation_recall": 0.7010309278350515
+  },
+  "test_fraud_precision": 0.64,
+  "test_fraud_recall": 0.67,
+  "test_fraud_f1": 0.6548148148148149,
+  "test_accuracy": 0.96,
+  "test_confusion_matrix_labels_0_1": [
+    [
+      2840,
+      60
+    ],
+    [
+      61,
+      123
+    ]
+  ],
+  "f1_target": 0.65,
+  "f1_target_pass": true
+}

@@ -71,3 +71,11 @@ Please continue from the existing code rather than rebuilding everything.
 - Coordinate before changing shared GitHub files so we do not overwrite each other's work.
 
 My work so far mainly covers **initial data preparation, Spark batch processing, Kafka setup, and a verified one-event streaming test**. The remaining work is to turn these pieces into a complete, tested end-to-end capstone.
+
+---
+
+## Airflow execution evidence
+
+The `insurance_claims_pipeline` DAG completed successfully on 17 October 2026. All seven tasks passed. The workflow validated 15,420 claims, built Silver and Gold outputs in HDFS, and verified the output success markers. The saved Random Forest test fraud F1-score was 0.6548 against the 0.65 target.
+
+Detailed run notes: [`docs/evidence/AIRFLOW_RUN_2026-10-17.md`](docs/evidence/AIRFLOW_RUN_2026-10-17.md).
