@@ -79,4 +79,853 @@ Please continue from the existing code rather than rebuilding everything.
 * Coordinate before changing shared GitHub files so we do not overwrite each other's work.
 
 My work so far mainly covers **initial data preparation, Spark batch processing, Kafka setup, and a verified one-event streaming test**. The remaining work is to turn these pieces into a complete, tested end-to-end capstone.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# 🚗 Insurance Claims Fraud Intelligence — Generative AI & RAG
+
+## 1. Project Overview
+
+The **Insurance Claims Fraud Intelligence — GenAI Module** is a local Generative AI application developed as part of the Insurance Claims Fraud Intelligence project.
+
+The module allows users to explore structured insurance claim records using natural-language questions. It combines data processing, text embeddings, vector search, and a locally running Large Language Model (LLM) to provide a Retrieval-Augmented Generation (RAG) workflow.
+
+The application supports two main operations:
+
+1. **Exact Claim Lookup:** Retrieve the original details of a particular claim using its claim ID.
+2. **RAG-Based Question Answering:** Search for semantically relevant claim records and use the retrieved context to generate a natural-language response.
+
+The implementation uses Python, Pandas, Sentence Transformers, ChromaDB, Ollama, and Microsoft's Phi-3 Mini language model.
+
+The application runs locally, without requiring a cloud-hosted LLM API for its core question-answering workflow.
+
+---
+
+## 2. Project Objectives
+
+- Integrate Generative AI into an insurance claims analytics project.
+- Enable natural-language exploration of structured insurance data.
+- Convert claim records into text suitable for semantic retrieval.
+- Generate numerical vector representations of claim text using an embedding model.
+- Store and retrieve embeddings using a vector database.
+- Use a local LLM to formulate answers from retrieved context.
+- Support direct lookup of original claim records.
+- Organize the implementation into reusable Python modules.
+- Demonstrate the concepts of LLMs, embeddings, vector databases, semantic search, prompt construction, and RAG.
+- Provide a foundation for further development of insurance analytics and fraud-investigation assistance.
+
+## 3. Dataset Description
+
+The module uses the insurance claims dataset:
+
+`data/raw/claims/claims_core.csv`
+
+### Dataset statistics
+
+| Property | Value |
+|---|---|
+| Dataset filename | `claims_core.csv` |
+| Number of records | 15,420 |
+| Number of columns | 34 |
+| Target column | `fraud_label` |
+| Non-fraud records | 14,497 |
+| Fraud records | 923 |
+| Fraud rate | Approximately 5.99% |
+| Historical period | 1994–1996 |
+
+The dataset contains structured information about insurance claims, policies, customers, vehicles, and claim-related circumstances.
+
+### Important fields
+
+- `claim_id`
+- `claim_year`
+- `claim_month`
+- `accident_area`
+- `fault`
+- `policy_type`
+- `base_policy`
+- `deductible`
+- `vehicle_category`
+- `vehicle_make`
+- `vehicle_price`
+- `vehicle_age`
+- `customer_age`
+- `customer_sex`
+- `marital_status`
+- `driver_rating`
+- `police_report_filed`
+- `witness_present`
+- `agent_type`
+- `agent_id`
+- `number_of_supplements`
+- `address_change_claim`
+- `number_of_cars`
+- `days_policy_accident`
+- `days_policy_claim`
+- `past_number_of_claims`
+- `age_of_policyholder`
+- `fraud_label`
+
+The knowledge-base preparation step selects relevant claim attributes and converts the structured information into searchable text.
+
+**Important:** The dataset is historical and primarily structured. It does not provide a collection of detailed, free-text accident narratives. The GenAI module therefore works with structured claim attributes rather than pretending to analyze unavailable narrative descriptions.
+
+---
+
+## 4. Technologies and Packages Used
+
+### 4.1 Python
+
+Python is the main programming language used to implement data preparation, text processing, embedding generation, vector-store construction, and the interactive RAG application.
+
+### 4.2 Pandas
+
+**Package:** `pandas`
+
+Pandas is used to load and process the CSV dataset.
+
+Main responsibilities:
+
+- Read the original claims dataset.
+- Access records using claim IDs.
+- Retrieve original field values.
+- Support the knowledge-base preparation workflow.
+- Keep exact claim lookup separate from LLM-generated responses.
+
+### 4.3 Sentence Transformers
+
+**Package:** `sentence-transformers`
+
+**Embedding model:** `sentence-transformers/all-MiniLM-L6-v2`
+
+Sentence Transformers converts text into numerical vector representations called embeddings.
+
+Two texts with related meanings can have similar vector representations, allowing semantic retrieval even when the user's wording differs from the wording in a stored record.
+
+The embedding model is used for:
+
+- Converting claim text into embeddings during indexing.
+- Converting user questions into embeddings during retrieval.
+- Enabling similarity-based semantic search.
+
+The embedding model is different from the language model used to generate the final answer.
+
+### 4.4 ChromaDB
+
+**Package:** `chromadb`
+
+ChromaDB is the vector database used to store and retrieve the indexed claim records.
+
+It stores information associated with the vector index, including embeddings, document text, and metadata.
+
+The project uses ChromaDB for:
+
+- Storing claim embeddings.
+- Associating stored records with claim IDs.
+- Retrieving semantically relevant records.
+- Providing context for the RAG application.
+
+**Vector-store location:**
+
+`outputs/genai/chroma_db/`
+
+The local database includes files such as `chroma.sqlite3` and vector-index binary files.
+
+The existing index contains 15,420 indexed records. The application reuses this index instead of rebuilding it whenever a user starts the question-answering application.
+
+### 4.5 Ollama
+
+**Software:** Ollama
+
+Ollama is the local model runtime used to download, manage, and run the language model on the computer.
+
+It provides a local interface through which the Python application sends prompts and receives generated responses.
+
+Ollama is not itself the LLM. It is the software that runs the selected model.
+
+### 4.6 Phi-3 Mini
+
+**Model:** `phi3:mini`
+
+Phi-3 Mini is the language model used by the application through Ollama.
+
+Its role is to:
+
+- Read the user's question.
+- Process the retrieved claim context.
+- Generate a natural-language answer.
+- Summarize relevant information from the supplied context.
+
+The model runs locally through Ollama rather than through a remote hosted LLM API.
+
+**Clarification:** The implemented model is Phi-3 Mini, not a Llama model. Ollama can run multiple supported models, but the model configured for this project is `phi3:mini`.
+
+### 4.7 Presidio Analyzer and Anonymizer
+
+**Packages:**
+- `presidio-analyzer`
+- `presidio-anonymizer`
+
+Microsoft Presidio provides utilities for detecting and anonymizing personally identifiable information (PII).
+
+The project contains a separate PII-redaction utility:
+
+`src/genai/pii_redaction.py`
+
+These tools can be used to identify and redact supported sensitive entities in text.
+
+Presidio is distinct from the embedding model, vector database, and LLM. It is a privacy-related utility, not the component responsible for semantic search or answer generation.
+
+The presence of this utility does not mean that every field in the dataset is automatically anonymized. Its actual behavior depends on how the utility is invoked and configured.
+
+### 4.8 Python Standard Library
+
+The implementation also uses Python's built-in modules where appropriate, including file and path handling, regular expressions, and JSONL processing.
+
+These modules do not require separate installation.
+
+---
+
+## 5. Project Dependencies
+
+The main packages used in the GenAI module are:
+
+| Package or software | Purpose |
+|---|---|
+| Python 3.11 | Programming environment |
+| `pandas` | Structured data processing |
+| `sentence-transformers` | Text embedding generation |
+| `chromadb` | Vector database |
+| `ollama` | Python client for Ollama |
+| Ollama application | Local LLM runtime |
+| `phi3:mini` | Local language model |
+| `presidio-analyzer` | PII detection utility |
+| `presidio-anonymizer` | PII anonymization utility |
+
+The embedding model is downloaded separately from the Python package.
+
+### Installing the Python packages
+
+In the project's activated Python environment, install the required packages with:
+
+```powershell
+python -m pip install pandas chromadb sentence-transformers ollama presidio-analyzer presidio-anonymizer
+```
+
+This installs the primary packages listed above. Other modules in the overall fraud-detection project may require additional dependencies.
+
+### Checking the installed versions
+
+```powershell
+python --version
+python -m pip show pandas
+python -m pip show chromadb
+python -m pip show sentence-transformers
+python -m pip show ollama
+python -m pip show presidio-analyzer
+python -m pip show presidio-anonymizer
+```
+
+For reproducible deployment, use the dependency versions tested in the project's actual Python environment.
+
+---
+
+## 6. Actual Project Directory Structure
+
+The relevant GenAI files are organized as follows:
+
+```text
+insurance-claims-fraud-intelligence/
+│
+├── data/
+│   └── raw/
+│       └── claims/
+│           └── claims_core.csv
+│
+├── outputs/
+│   └── genai/
+│       ├── claims_knowledge_base.jsonl
+│       └── chroma_db/
+│           ├── chroma.sqlite3
+│           └── vector-index files
+│
+├── src/
+│   ├── fraud_model.py
+│   ├── fraud_model_experiment.py
+│   ├── fraud_feature_experiment.py
+│   ├── fraud_xgboost_experiment.py
+│   ├── fraud_xgboost_depth_experiment.py
+│   ├── inspect_fraud_features.py
+│   ├── inspect_xgboost_features.py
+│   │
+│   ├── kafka/
+│   │   └── claims_producer.py
+│   │
+│   └── genai/
+│       ├── claims_knowledge_base.py
+│       ├── pii_redaction.py
+│       ├── build_vector_store.py
+│       └── rag_app.py
+│
+├── .gitignore
+└── README.md
+```
+
+The project also contains other files outside this simplified view. The tree above highlights the important files involved in the current GenAI workflow.
+
+---
+
+## 7. Purpose of Each GenAI File
+
+### 7.1 `src/genai/claims_knowledge_base.py`
+
+**Purpose:** Prepare a searchable text representation of the structured insurance claims.
+
+Responsibilities include:
+
+- Load the claims dataset.
+- Select relevant claim fields.
+- Convert field names and values into readable text.
+- Associate records with claim identifiers.
+- Prepare structured information for the knowledge-base output.
+
+The resulting text is designed to be more suitable for semantic search than an unformatted row of CSV values.
+
+### 7.2 `outputs/genai/claims_knowledge_base.jsonl`
+
+**Purpose:** Store the prepared claim records in JSON Lines format.
+
+JSONL stores one JSON object per line. Each object can contain a claim identifier, its prepared text, and associated metadata.
+
+A simplified example is:
+
+```json
+{
+  "id": "CLM000001",
+  "text": "Insurance claim record. Accident area: Urban; Fault: Policy Holder; Policy type: Sport - Liability",
+  "metadata": {
+    "claim_id": "CLM000001",
+    "claim_year": 1994,
+    "fraud_label": 0,
+    "source": "claims_core.csv"
+  }
+}
+```
+
+This is an illustrative, shortened example; the actual JSONL records contain the fields generated by the project preparation script.
+
+The JSONL file serves as the prepared knowledge source for vector indexing.
+
+### 7.3 `src/genai/pii_redaction.py`
+
+**Purpose:** Provide a separate utility for PII detection and anonymization.
+
+The utility is related to privacy-aware text processing. It is not the main RAG application and is not the embedding-generation component.
+
+Privacy processing must be tested on the actual data and configured fields before it is described as a complete anonymization solution.
+
+### 7.4 `src/genai/build_vector_store.py`
+
+**Purpose:** Create the searchable ChromaDB vector store from the prepared knowledge base.
+
+The indexing workflow is:
+
+1. Read the JSONL knowledge base.
+2. Load the Sentence Transformers embedding model.
+3. Convert the prepared claim text into embeddings.
+4. Store documents, embeddings, and metadata in ChromaDB.
+5. Make the records available for semantic retrieval.
+
+The generated vector database is saved under:
+
+`outputs/genai/chroma_db/`
+
+The indexing script is separate from the interactive application so that the vector store can be prepared once and reused.
+
+### 7.5 `src/genai/rag_app.py`
+
+**Purpose:** Run the interactive question-answering application.
+
+The application:
+
+- Loads the original CSV for exact claim lookups.
+- Accepts a user's question through the terminal.
+- Recognizes supported claim-ID queries.
+- Retrieves exact records directly from the original dataset.
+- Uses the existing ChromaDB index for general semantic questions.
+- Supplies retrieved context to the local language model.
+- Displays the generated answer and supporting claim IDs.
+
+The application is designed to reuse the existing index and does not need to rebuild all 15,420 records at every startup.
+
+---
+
+## 8. What Is Generative AI?
+
+Generative Artificial Intelligence is a branch of AI that generates new content based on patterns learned from training data and the information provided to the model.
+
+Examples include:
+
+- Generating natural-language answers.
+- Summarizing information.
+- Explaining retrieved records.
+- Answering questions in conversational language.
+
+In this project, the language model generates answers from the user's question and the retrieved claim context.
+
+Generative AI does not guarantee that every generated statement is correct. Its responses should be checked against the underlying records.
+
+## 9. What Is a Large Language Model (LLM)?
+
+A Large Language Model is a neural network trained to understand and generate language.
+
+In the project, Phi-3 Mini is the LLM.
+
+The LLM is responsible for generating the answer. It does not replace the original CSV or the vector database.
+
+The distinction between the components is:
+
+- **Sentence Transformer:** Converts text into embeddings.
+- **ChromaDB:** Stores and retrieves relevant records.
+- **Ollama:** Runs the selected language model locally.
+- **Phi-3 Mini:** Generates the natural-language answer.
+- **Python application:** Connects these components into a working pipeline.
+
+## 10. What Is Ollama?
+
+Ollama is software for running supported language models locally.
+
+It manages the model and exposes an interface that applications can use to send prompts and receive generated output.
+
+The project uses the `phi3:mini` model through Ollama.
+
+### Checking Ollama
+
+Open a PowerShell terminal and run:
+
+```powershell
+ollama list
+```
+
+Confirm that `phi3:mini` is available.
+
+If the model has not been downloaded, run:
+
+```powershell
+ollama pull phi3:mini
+```
+
+To start a model interactively, run:
+
+```powershell
+ollama run phi3:mini
+```
+
+The Ollama service must be available when the RAG application requests a generated answer.
+
+## 11. What Are Embeddings?
+
+Embeddings are numerical representations of text.
+
+An embedding model maps text into a vector space where semantically related pieces of text can be compared using a similarity measure.
+
+For example, a question about vehicle characteristics may be semantically related to a claim record that mentions the vehicle category, make, and age, even if the wording differs.
+
+The project uses `sentence-transformers/all-MiniLM-L6-v2` for this task.
+
+Embeddings are useful because ordinary keyword matching may miss relevant records when users use different words to express similar ideas.
+
+## 12. What Is a Vector Database?
+
+A vector database stores vector representations and supports similarity-based retrieval.
+
+ChromaDB is the vector database used in this project.
+
+The stored information associates claim text with embeddings and metadata, allowing the application to retrieve records relevant to a user's question.
+
+The vector database complements the original CSV. It is not a replacement for the source dataset.
+
+## 13. What Is Semantic Search?
+
+Semantic search retrieves information according to meaning and similarity, rather than relying only on exact word matches.
+
+The general retrieval process is:
+
+1. Receive a natural-language question.
+2. Convert the question into an embedding.
+3. Search the vector database for similar stored representations.
+4. Retrieve the corresponding records.
+5. Use those records as context for answer generation.
+
+The quality of semantic retrieval depends on the embedding model, the preparation of the text, the indexed data, and the retrieval configuration.
+
+## 14. What Is Retrieval-Augmented Generation (RAG)?
+
+Retrieval-Augmented Generation combines information retrieval with language generation.
+
+Instead of asking the language model to answer entirely from its internal learned knowledge, a RAG application first retrieves relevant information from an external knowledge source and then supplies it to the model.
+
+The RAG pattern has three main stages:
+
+1. **Retrieval:** Find relevant information from the knowledge base.
+2. **Augmentation:** Add the retrieved information to the prompt as context.
+3. **Generation:** Ask the LLM to formulate a response using the question and context.
+
+In this project, ChromaDB provides retrieval, the retrieved claim records provide context, and Phi-3 Mini generates the answer through Ollama.
+
+### Why use RAG?
+
+- It connects answers to a project's own data.
+- It can provide relevant context at question time.
+- It supports natural-language access to structured information.
+- It can show supporting claim identifiers for verification.
+- It avoids requiring all claim records to be included in every prompt.
+
+RAG does not automatically guarantee factual correctness. The generated answer should be compared with the retrieved records.
+
+---
+
+## 15. Complete System Architecture
+
+The GenAI module has two paths: a direct lookup path and a RAG question-answering path.
+
+```text
+                  INSURANCE CLAIMS CSV
+                  claims_core.csv
+                          |
+              +-----------+-----------+
+              |                       |
+              v                       v
+    KNOWLEDGE-BASE PREPARATION   EXACT CLAIM LOOKUP
+              |                       |
+              v                       v
+    claims_knowledge_base.jsonl  Original claim values
+              |
+              v
+    Sentence Transformers
+    all-MiniLM-L6-v2
+              |
+              v
+       Text Embeddings
+              |
+              v
+           ChromaDB
+       Vector Database
+              |
+              | Retrieve relevant records
+              v
+       Retrieved Claim Context
+              |
+              v
+       Prompt Construction
+              |
+              v
+       Ollama Local Runtime
+              |
+              v
+          Phi-3 Mini
+              |
+              v
+     Natural-Language Answer
+     with Supporting Claim IDs
+```
+
+The exact claim lookup bypasses semantic retrieval and LLM generation. This is important because a direct record lookup should return original values rather than a generated interpretation.
+
+## 16. Data Preparation and Indexing Workflow
+
+### Step 1: Load the dataset
+
+Read the original claims CSV using Pandas.
+
+### Step 2: Prepare the knowledge base
+
+Convert relevant fields into readable text and associate each record with its claim ID and metadata.
+
+### Step 3: Save the JSONL file
+
+Write the prepared records to:
+
+`outputs/genai/claims_knowledge_base.jsonl`
+
+### Step 4: Generate embeddings
+
+Use Sentence Transformers to convert the prepared text into numerical vectors.
+
+### Step 5: Store the vectors
+
+Store the document text, embeddings, and metadata in ChromaDB.
+
+### Step 6: Verify the index
+
+The completed index contains 15,420 records.
+
+### Step 7: Reuse the index
+
+The RAG application opens the existing ChromaDB collection instead of rebuilding the index every time.
+
+---
+
+## 17. Running the Application
+
+Run the commands from the project root in Windows PowerShell.
+
+### Step 1: Activate the existing Python environment
+
+Use the Python environment in which the required GenAI packages were installed.
+
+For example, if your existing environment is the project's active `.venv`:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+Do not create a new environment unnecessarily if the working environment is already configured.
+
+### Step 2: Check Ollama and the model
+
+```powershell
+ollama list
+```
+
+Verify that `phi3:mini` is available and that the Ollama service is running.
+
+### Step 3: Run the RAG application
+
+```powershell
+python src\genai\rag_app.py
+```
+
+The application loads the dataset and waits for a question.
+
+### Step 4: Ask a direct claim question
+
+For example:
+
+```text
+Show the details of claim CLM000001.
+```
+
+The application retrieves the corresponding original record from the CSV.
+
+### Step 5: Ask a general RAG question
+
+For example:
+
+```text
+What policy types and deductibles appear in the retrieved records?
+```
+
+The application searches the existing vector store and uses the retrieved context to generate an answer.
+
+### Step 6: Exit
+
+Type:
+
+```text
+exit
+```
+
+The direct lookup path and general RAG path are different operations and should be demonstrated separately during evaluation.
+
+---
+
+## 18. Example Test Cases
+
+### Test Case 1: Exact claim lookup
+
+**Input:**
+
+`Show the details of claim CLM000001.`
+
+**Expected behavior:**
+
+- Identify the claim ID.
+- Locate the corresponding row in the original CSV.
+- Display the original claim fields.
+- Avoid using generated text as a substitute for the original record.
+
+**Verification:** Compare the displayed values with the corresponding row in `claims_core.csv`.
+
+### Test Case 2: General semantic question
+
+**Input:**
+
+`What policy types and deductibles appear in the retrieved records?`
+
+**Expected behavior:**
+
+- Convert the question into an embedding.
+- Retrieve relevant records from ChromaDB.
+- Supply retrieved context to Phi-3 Mini.
+- Display the generated answer and supporting claim IDs.
+
+**Verification:** Check the generated response against the cited or displayed source records.
+
+### Test Case 3: Startup and index reuse
+
+**Action:** Start `rag_app.py`.
+
+**Expected behavior:**
+
+- Load the original dataset.
+- Open the existing vector store for general questions.
+- Avoid running the complete indexing process during normal application startup.
+
+**Verification:** Confirm that the application uses the existing collection and reports the indexed record count.
+
+These tests demonstrate the expected behavior of the implemented paths. They are not a substitute for a complete formal test suite.
+
+---
+
+## 19. Why Is the Original CSV Still Required?
+
+The original CSV is retained because exact claim lookups need the original field values.
+
+The vector database is optimized for semantic retrieval, while the CSV is the source of the original structured values.
+
+Keeping these responsibilities separate provides two benefits:
+
+- Exact lookups can be verified against the original dataset.
+- General questions can use semantic retrieval and natural-language generation.
+
+The RAG response should not be treated as the authoritative record when the original CSV can be consulted.
+
+## 20. Why Use a Local LLM?
+
+A local LLM runs on the user's computer through a local model runtime.
+
+Advantages include:
+
+- No remote LLM API is required for the core generation step.
+- Claim questions can be processed locally.
+- The model can be used without paying a per-request hosted inference fee.
+- The workflow can be demonstrated in a local development environment.
+
+Local execution still requires sufficient memory and processing resources. Generation speed depends on the hardware, model size, and prompt length.
+
+Local execution alone does not guarantee that every component of the system is private or secure; data handling and logs must also be considered.
+
+## 21. Why Use ChromaDB Instead of Searching the CSV Directly?
+
+A direct CSV search is appropriate when the application knows the exact claim ID or needs an original field value.
+
+A vector database is useful when the user asks a question expressed in natural language and the system needs to retrieve records by semantic similarity.
+
+The two approaches solve different problems:
+
+| Exact CSV lookup | Vector retrieval |
+|---|---|
+| Uses a specific claim identifier or structured condition | Uses semantic similarity |
+| Returns original values | Returns relevant stored records |
+| Does not require LLM generation | Supplies context for LLM generation |
+| Appropriate for record verification | Appropriate for exploratory questions |
+
+Both approaches are included because the project supports both exact record retrieval and natural-language exploration.
+
+## 22. PII Redaction and Data Privacy
+
+The project includes `src/genai/pii_redaction.py` and uses Microsoft Presidio packages.
+
+PII detection and anonymization are relevant when processing records that contain personal information.
+
+However:
+
+- PII detection is not guaranteed to identify every sensitive value.
+- The redaction behavior depends on the implemented code and its configuration.
+- Structured identifiers may require custom rules.
+- Redaction should be verified before the output is shared or published.
+- The presence of a redaction utility should not be presented as proof that every stored record has been anonymized.
+
+The JSONL file and ChromaDB database are generated data artifacts. Their contents should be reviewed before sharing them publicly.
+
+## 23. Limitations
+
+1. **Historical data:** The claims dataset covers 1994–1996 and may not represent modern insurance practices.
+2. **Structured records:** The data does not contain a rich collection of free-text accident narratives.
+3. **Retrieval limitations:** Semantic search may retrieve records that are similar in wording or meaning but are not sufficient to answer every question.
+4. **Generation errors:** Phi-3 Mini can produce incomplete or inaccurate answers.
+5. **Local hardware:** Model performance and response time depend on available computing resources.
+6. **Index maintenance:** The vector database must be updated when the knowledge base changes.
+7. **Privacy:** PII handling and data-sharing permissions require separate verification.
+8. **Fraud interpretation:** Semantic similarity or an LLM-generated explanation is not proof of insurance fraud.
+9. **Evaluation:** The module needs a broader question-answering test set to quantify retrieval quality and answer correctness.
+
+## 24. Possible Future Enhancements
+
+The following are possible future developments, not claims about the current implementation:
+
+- Add a web-based interface using Streamlit or FastAPI.
+- Add filters for claim year, vehicle category, and policy type.
+- Improve retrieval using hybrid keyword and vector search.
+- Add reranking to improve the ordering of retrieved records.
+- Evaluate retrieval precision and recall on a labeled question set.
+- Measure answer faithfulness against retrieved source records.
+- Add automated tests for exact lookup and RAG responses.
+- Add versioned knowledge-base updates and index-refresh procedures.
+- Introduce validated PII-redaction checks.
+- Integrate machine-learning fraud predictions into a carefully validated investigative workflow.
+- Add a user-friendly interface for source inspection and claim comparison.
+
+## 25. Key GenAI Terminology for Viva
+
+| Term | Meaning in this project |
+|---|---|
+| Generative AI | Technology that generates content, such as natural-language answers |
+| LLM | Language model used to generate answers |
+| Phi-3 Mini | The language model used by this implementation |
+| Ollama | Runtime used to execute the model locally |
+| Embedding | Numerical representation of text |
+| Sentence Transformers | Library used to create embeddings |
+| `all-MiniLM-L6-v2` | Embedding model used for text representation |
+| Vector database | Database that stores and searches vector representations |
+| ChromaDB | Vector database used in the project |
+| Semantic search | Retrieval based on similarity in meaning |
+| RAG | Retrieval-Augmented Generation |
+| Retrieval | Finding relevant records from the knowledge base |
+| Augmentation | Supplying retrieved records as context to the model |
+| Generation | Producing a natural-language response |
+| JSONL | File format storing one JSON object per line |
+| Metadata | Additional fields associated with a stored record |
+| Prompt | Instructions and context supplied to the LLM |
+| PII | Personally identifiable information |
+| Presidio | Utility used for PII detection and anonymization |
+| Exact lookup | Direct retrieval of original claim values |
+| Hallucination | Generated content that is unsupported or incorrect |
+| Grounding | Connecting a response to the supplied source information |
+
+## 26. Project Outcome
+
+The GenAI module demonstrates an end-to-end local RAG workflow for structured insurance claims.
+
+The implementation prepares 15,420 claim records, generates embeddings, stores searchable representations in ChromaDB, retrieves relevant records, and uses Phi-3 Mini through Ollama to generate answers.
+
+It also provides a direct claim-ID lookup path that retrieves original values from the CSV.
+
+The key technical outcome is the integration of a local LLM with a project-specific knowledge base, supported by semantic retrieval and a persistent vector store.
+
+The system is a prototype for data exploration and claim investigation assistance. It does not independently establish that a claim is fraudulent.
+
+---
+
+## 27. Repository Information
+
+**Repository:** `insurance-claims-fraud-intelligence`
+
+**GenAI branch:** `harshita/genai-capstone`
+
+**Main application:** `src/genai/rag_app.py`
+
+**Knowledge-base generator:** `src/genai/claims_knowledge_base.py`
+
+**Vector-store builder:** `src/genai/build_vector_store.py`
+
+**PII utility:** `src/genai/pii_redaction.py`
+
+**Prepared knowledge base:** `outputs/genai/claims_knowledge_base.jsonl`
+
+**Vector database:** `outputs/genai/chroma_db/`
+
+**Original dataset:** `data/raw/claims/claims_core.csv`
+
+The GenAI module brings together Python-based data processing, embeddings, vector search, local LLM inference, and retrieval-augmented question answering in a single project workflow.
+
 
