@@ -36,3 +36,9 @@ data/raw/claims/*.zip
 .DS_Store
 .vscode/
 .idea/
+
+# Ignore Python virtual environments
+.venv/
+.venv-genai/
+__pycache__/
+*.py[cod]
